@@ -286,31 +286,3 @@ config = { " configurable ":{ " thread _ id ":session _ id } }
 graph.invoke(初始状态，配置=配置)
 ```
 
----
-
-##八、常见问题
-
-###Q1:朗史密斯没有数据？
-
--检查`。包封/包围（动词envelop的简写）` 中 `LANGSMITH_TRACING=true`
--检查`LANGSMITH_API_KEY`是否正确
--检查`LANGSMITH_PROJECT`是否设置
--访问https://smith.langchain.com/查看对应项目
-
-###Q2: Redis连接失败？
-
-项目会自动降级为文件存储,不影响使用。如需启用Redis:
--确认雷迪斯服务已启动
--检查`。包封/包围（动词envelop的简写）`中的雷迪斯配置
--查看`配置_数据. py` 中 `HISTORY_BACKEND = "redis "`
-
-###Q3:代理一直调用工具不结束？
-
--检查`配置_数据. py` 中 `代理最大迭代次数`（默认 10)
--优化`代理系统提示`,明确告知何时应直接回答
-
-###Q4:如何查看代理人的决策过程？
-
--同步接口：返回值中的`迭代次数`字段
--流式接口:SSE事件中的`工具_开始` / `工具_结束`事件
--朗史密斯面板：完整的节点执行树
