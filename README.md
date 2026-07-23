@@ -79,17 +79,6 @@ END  ◄────────────────────────
      (工具执行后回到 agent_node 继续决策)
 ```
 
-**关键代码**（`graph/build.py`）：
-
-```python
-workflow = StateGraph(AgentState)
-workflow.add_node("agent", agent_node)
-workflow.add_node("tools", tools_node)
-workflow.set_entry_point("agent")
-workflow.add_conditional_edges("agent", should_continue, {"tools": "tools", "end": END})
-workflow.add_edge("tools", "agent")
-graph = workflow.compile()
-```
 
 ### 3.2 Agent 工具清单
 
