@@ -269,11 +269,11 @@ ALL_TOOLS.append(my_new_tool)
 
 编辑 `config_data.py` 中的 `AGENT_SYSTEM_PROMPT`，调整 Agent 的行为策略。
 
-###7.3 接入语言图表持久化
+### 7.3 接入语言图表持久化
 
 如需语言图表原生的会话检查点（而非自定义历史记录),修改`graph/build.py`：
 
-```大蟒
+```
 从langgraph.checkpoint.memory导入内存Saver
 
 graph = workflow . compile(check pointer = memory saver())
@@ -281,7 +281,7 @@ graph = workflow . compile(check pointer = memory saver())
 
 调用时传入`线程id`：
 
-```大蟒
+```
 config = { " configurable ":{ " thread _ id ":session _ id } }
 graph.invoke(初始状态，配置=配置)
 ```
