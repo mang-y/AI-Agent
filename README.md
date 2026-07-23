@@ -158,7 +158,7 @@ uvicorn main_agent:app --host 0.0.0.0 --port 8000 --reload
 #### 同步对话
 
 ```bash
-curl -X POST http://localhost:8000/chat/sync -H "Content-Type: application/json" -d '{"input": "帮我检索一下关于尺码推荐的内容", "session_id": "test_001"}'
+curl -X POST http://localhost:8000/chat/sync -H "Content-Type: application/json" -d '{"input": "帮我介绍一下关于产品的内容", "session_id": "test_001"}'
 ```
 
 #### 流式对话（SSE）
@@ -235,7 +235,6 @@ curl -X POST http://localhost:8000/upload/text -H "Content-Type: application/jso
 | 文档上传 | ✅ | ✅ |
 | 系统评估 | ✅（独立脚本） | ✅（Agent 工具，可对话式触发） |
 | 历史记录 | ✅ | ✅ |
-| 数学计算 | ❌ | ✅ |
 | 多工具协作 | ❌ | ✅ |
 | 自主决策 | ❌ | ✅ |
 | 全链路追踪 | ❌ | ✅（LangSmith） |
