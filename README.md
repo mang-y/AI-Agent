@@ -1,11 +1,13 @@
-# 基于LangGraph的企业运维RAG智能Agent 项目（LangGraph + LangSmith + RAG）
+# 基于LangGraph的企业运维RAG智能Agent项目（LangGraph + LangSmith + RAG）
 
 面向企业内部IT运维文档场景的私有知识库问答系统，解决人工运维答疑效率低、新人上手慢、文档分散检索难的问题。
 > 将原有 RAG 项目升级为基于 **LangGraph** 的智能 **AI Agent** 项目，集成 **LangSmith** 全链路追踪，支持 **Agent 工具调用**自主决策。
 
 ---
 
-## 一、项目改造概览
+## 一、项目变迁
+
+本项目最初是一个基础 RAG 对话系统，我们做了一次重要转型，从基础的 RAG，转型为 RAG智能Agent系统：
 
 ### 改造前（RAG + LCEL）
 
