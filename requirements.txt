@@ -1,3 +1,38 @@
-# AI Agent 项目测试依赖
-pytest>=7.0
-httpx>=0.24  # FastAPI TestClient 依赖
+# ============================================================
+# AI Agent 项目依赖（LangGraph + LangSmith + RAG）
+# ============================================================
+
+# --- LangChain 生态 ---
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-community>=0.3.0
+langchain-classic>=0.1.0
+langchain-qdrant>=0.1.4
+langgraph>=0.2.50
+
+# --- LangSmith 可观测性 ---
+langsmith>=0.1.100
+
+# --- LLM & Embedding (DashScope / 通义千问) ---
+dashscope>=1.20.0
+langchain-community>=0.3.0  # 含 ChatTongyi, DashScopeEmbeddings, DashScopeRerank
+
+# --- 向量库 ---
+qdrant-client>=1.9.0
+
+# --- 检索相关 ---
+rank-bm25>=0.2.2
+jieba>=0.42.1
+
+# --- Web 框架 ---
+fastapi>=0.110.0
+uvicorn>=0.27.0
+sse-starlette>=2.0.0
+python-multipart>=0.0.9
+
+# --- 存储 ---
+redis>=5.0.0
+
+# --- 工具 ---
+python-dotenv>=1.0.0
+pydantic>=2.6.0
