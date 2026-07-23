@@ -9,6 +9,7 @@ from tools.file_tools import upload_document, list_documents
 from tools.history_tools import get_chat_history, clear_history
 from tools.rag_tools import rag_search, rag_answer
 from tools.utility_tools import calculator
+from tools.eval_tools import evaluate_rag
 
 # Agent 可调用的全部工具
 ALL_TOOLS = [
@@ -19,6 +20,7 @@ ALL_TOOLS = [
     get_chat_history,
     clear_history,
     calculator,
+    evaluate_rag,
 ]
 
 __all__ = [
@@ -30,4 +32,5 @@ __all__ = [
     "get_chat_history",
     "clear_history",
     "calculator",
+    "evaluate_rag",
 ]
