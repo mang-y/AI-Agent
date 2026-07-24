@@ -19,6 +19,7 @@ RAG 基础设施模块（懒加载版）
 import os
 import logging
 import functools
+from copy import deepcopy
 import jieba
 
 from langchain_core.documents import Document
@@ -359,11 +360,65 @@ def hybrid_retrieve_with_rerank(query: str) -> list[Document]:
             return raw_docs[:SIMILARITY_K]
 
         try:
-            reranked = get_rerank_compressor().compress_documents(valid_docs, query)
+            reranked = _safe_rerank(valid_docs, query)
             return reranked if reranked else raw_docs[:SIMILARITY_K]
         except Exception as e:
             logger.error(f"重排序失败: {str(e)}")
             return raw_docs[:SIMILARITY_K]
     except Exception as e:
         logger.error(f"混合检索失败: {str(e)}")
+        return []
+
+
+def _safe_rerank(valid_docs: list[Document], query: str) -> list[Document]:
+    """
+    安全调用 DashScope Rerank API，捕获并记录详细的 API 错误信息。
+
+    DashScopeRerank.rerank() 内部在 API 返回非 200 状态码时，
+    response.output 为 None，导致 'NoneType' object has no attribute 'results'，
+    原始 API 错误码和错误信息被掩盖。本函数通过直接调用 dashscope API
+    获取完整的错误详情并记录到日志。
+    """
+    if not DASHSCOPE_API_KEY:
+        logger.warning("DASHSCOPE_API_KEY 未设置，跳过重排，使用原始排序结果")
+        return []
+
+    try:
+        # 直接调用 dashscope TextReRank API，获取完整响应
+        docs_text = [d.page_content for d in valid_docs]
+
+        response = dashscope.TextReRank.call(
+            model=RERANK_MODEL,
+            query=query,
+            documents=docs_text,
+            top_n=SIMILARITY_K,
+            return_documents=False,
+        )
+
+        # 检查 API 响应状态码
+        if response.status_code != 200:
+            logger.error(
+                f"DashScope Rerank API 返回错误 (HTTP {response.status_code}): "
+                f"code={response.code}, message={response.message}, "
+                f"request_id={response.request_id}"
+            )
+            return []
+
+        # 安全访问 output
+        if response.output is None:
+            logger.error(f"DashScope Rerank 返回了空的 output (HTTP 200 但无结果): "
+                         f"request_id={response.request_id}")
+            return []
+
+        # 正常解析结果
+        compressed = []
+        for res in response.output.results:
+            doc = valid_docs[res.index]
+            doc_copy = Document(doc.page_content, metadata=deepcopy(doc.metadata))
+            doc_copy.metadata["relevance_score"] = res.relevance_score
+            compressed.append(doc_copy)
+        return compressed
+
+    except Exception as e:
+        logger.error(f"DashScope Rerank 调用异常: {type(e).__name__}: {str(e)}")
         return []
