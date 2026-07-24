@@ -93,9 +93,19 @@ def _do_rag_answer(query: str) -> tuple[str, str]:
     docs = _do_rag_search(query)
     context = format_document(docs)
 
-    # 2. 生成
+    # 2. 为空时直接拒绝，不经过 LLM
+    if context == "无相关参考资料":
+        return ("知识库中未找到与问题相关的资料。请补充上传相关文档后重试。", context)
+
+    # 3. 生成（硬约束提示词，禁止添加参考资料以外的内容）
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "以我提供的已知参考资料为主，简洁和专业的回答用户问题。参考资料:{context}。"),
+        ("system", """你是一个严格的RAG问答系统。请严格遵守以下规则：
+
+规则1：严格基于参考资料回答，不得添加任何参考资料中没有的信息。
+规则2：如果参考资料不足以完整回答问题，请明确指出哪些信息在资料中缺失。
+规则3：如果参考资料完全不相关，请回答"根据现有资料，无法回答该问题"。
+
+参考资料：{context}"""),
         ("user", "请回答用户提问：{input}"),
     ])
     chain = prompt | get_chat_model() | StrOutputParser()
