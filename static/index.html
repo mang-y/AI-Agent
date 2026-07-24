@@ -633,7 +633,7 @@ function renderMarkdown(text) {
 /* ============================================================
    API 调用
    ============================================================ */
-const API_BASE = '';  // 同源
+const API_BASE = 'http://127.0.0.1:8000';  // 同源
 
 async function apiGetSessions() {
   const resp = await fetch(`${API_BASE}/sessions`);
@@ -766,6 +766,11 @@ async function switchSession(sessionId) {
     return;
   }
   if (sessionId === state.currentSessionId) return;
+
+  // =====新增：清空页面所有消息（包含残留的工具卡片）=====
+  dom.messagesArea.innerHTML = '';
+  dom.welcomePage.style.display = "flex";
+
   state.currentSessionId = sessionId;
   renderSessionList(dom.sessionSearch.value);
 
