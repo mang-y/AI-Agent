@@ -31,3 +31,5 @@ class AgentState(TypedDict):
     retrieved_docs: Optional[list[Document]]
     # 额外元数据（用于 LangSmith 追踪）
     metadata: Optional[dict[str, Any]]
+    # 反思/自纠错：已执行的反思次数（0 = 尚未反思）
+    reflection_count: int
