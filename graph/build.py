@@ -17,7 +17,7 @@ import logging
 from langgraph.graph import StateGraph, START, END
 
 from graph.state import AgentState
-from graph.nodes import agent_node, tools_node, should_continue
+from graph.nodes import agent_node, tools_node, should_continue, reflection_node, should_reflect
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +25,13 @@ logger = logging.getLogger(__name__)
 def build_agent_graph():
     """
     构建 Agent 工作流图。
+
+    工作流结构：
+        START → agent → should_continue?
+                            ├─ "tools" → tools → agent (循环)
+                            └─ "end"   → reflection → should_reflect?
+                                                          ├─ "reflect" → agent (带反馈重试)
+                                                          └─ "end"     → END
 
     Returns:
         编译后的 LangGraph Runnable，可直接调用 invoke/stream/astream
@@ -35,30 +42,42 @@ def build_agent_graph():
     # 2. 添加节点
     workflow.add_node("agent", agent_node)
     workflow.add_node("tools", tools_node)
+    workflow.add_node("reflection", reflection_node)
 
     # 3. 设置入口
     workflow.set_entry_point("agent")
 
-    # 4. 添加条件边：agent → should_continue → tools / END
+    # 4. 添加条件边：agent → should_continue → tools / reflection
+    #    当 agent 不再调用工具时，进入反思节点评估回答质量
     workflow.add_conditional_edges(
         "agent",
         should_continue,
         {
             "tools": "tools",
-            "end": END,
+            "end": "reflection",
         },
     )
 
     # 5. 添加工具回边：tools → agent（工具执行后回到 agent 决策）
     workflow.add_edge("tools", "agent")
 
-    # 6. 编译图
+    # 6. 添加反思条件边：reflection → should_reflect → agent (重试) / END
+    workflow.add_conditional_edges(
+        "reflection",
+        should_reflect,
+        {
+            "reflect": "agent",
+            "end": END,
+        },
+    )
+
+    # 7. 编译图
     # 注意：这里不使用 checkpointer，历史记录由 agent_node 内部管理
     # 如需 LangGraph 原生持久化，可传入 MemorySaver 或 SqliteSaver
     graph = workflow.compile()
 
     logger.info("✅ LangGraph Agent 工作流构建完成")
-    logger.info("   工作流: START → agent → (tools → agent)* → END")
+    logger.info("   工作流: START → agent → (tools → agent)* → reflection → (agent)* → END")
     return graph
 
 
