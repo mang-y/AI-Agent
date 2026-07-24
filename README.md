@@ -88,12 +88,12 @@ should_continue? ──── 有 tool_calls ──→ tools_node (执行工具)
   │                                        │
   │ 无 tool_calls                          │
   ▼                                        │
-reflection_node (评估回答质量)               │
+reflection_node (评估回答质量)              │
   │                                        │
   ▼                                        │
 should_reflect? ──── 需要改进 ──→ agent (带反馈重试)
   │                                        │
-  无需改进                                   │
+  无需改进                                  │
   ▼                                        │
 END ◄──────────────────────────────────——─—┘
 ```
