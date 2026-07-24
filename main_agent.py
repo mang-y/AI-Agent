@@ -274,6 +274,7 @@ async def chat_sync(req: ChatRequest):
         "iteration": 0,
         "retrieved_docs": None,
         "metadata": {"session_id": session_id, "source": "api_sync"},
+        "reflection_count": 0,
     }
 
     runnable_config = RunnableConfig(
@@ -339,6 +340,7 @@ async def chat_stream(request: Request, req: ChatRequest):
         "iteration": 0,
         "retrieved_docs": None,
         "metadata": {"session_id": session_id, "source": "api_stream"},
+        "reflection_count": 0,
     }
 
     runnable_config = RunnableConfig(
